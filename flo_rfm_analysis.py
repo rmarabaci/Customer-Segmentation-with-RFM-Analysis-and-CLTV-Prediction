@@ -28,7 +28,7 @@ import datetime as dt
 import seaborn as sns
 import matplotlib.pyplot as plt
 pd.set_option('display.max_columns', None)
-#pd.set_option('display.max_rows', None) '''bu islem tum satirlari da gormek istediginde yapilir.'''
+#pd.set_option('display.max_rows', None) 
 pd.set_option('display.float_format' , lambda x: '%.3f' % x)
 
 df_ = pd.read_csv('/Users/rmarabaci/PycharmProjects/pythonProject1/data_science_bootcamp/Hafta_4_CRM_Analytics/FLO_RFM_Analizi/flo_data_20k.csv')
@@ -40,7 +40,7 @@ df = df_.copy()
 # b. Değişken isimleri,
 # c. Betimsel istatistik,
 # d. Boş değer,
-# e. Değişken tipleri, incelemesi yapınız.
+# e. Değişken tipleri, incelemesi yapalım.
 
 
 def check_df(dataframe, head=10):
@@ -79,7 +79,7 @@ df["customer_value_total_ever_online"].hist()
 plt.show()
 
 #Adım3: Omnichannel müşterilerin hem online'dan hemde offline platformlardan alışveriş yaptığını ifade etmektedir. Her bir müşterinin toplam
-#alışveriş sayısı ve harcaması için yeni değişkenler oluşturunuz.
+#alışveriş sayısı ve harcaması için yeni değişkenler oluşturalım.
 
 df["order_num_omnichannel"] = df["order_num_total_ever_offline"] + df["order_num_total_ever_online"]
 
@@ -87,7 +87,7 @@ df["customer_value_total_ever_omnichannel"] = df["customer_value_total_ever_offl
 
 df.dtypes
 
-#Adım4: Değişken tiplerini inceleyiniz. Tarih ifade eden değişkenlerin tipini date'e çeviriniz.
+#Adım4: Değişken tiplerini inceleyelim. Tarih ifade eden değişkenlerin tipini date'e çevirelim.
 
 df['first_order_date'] = pd.to_datetime(df['first_order_date'])
 
@@ -98,7 +98,7 @@ df['last_order_date_online'] = pd.to_datetime(df['last_order_date_online'])
 df['last_order_date_offline'] = pd.to_datetime(df['last_order_date_offline'])
 
 
-# Adım5: Alışveriş kanallarındaki müşteri sayısının, toplam alınan ürün sayısının ve toplam harcamaların dağılımına bakınız.
+# Adım5: Alışveriş kanallarındaki müşteri sayısının, toplam alınan ürün sayısının ve toplam harcamaların dağılımına bakalım.
 df.head(10)
 
 df['master_id'].value_counts()
@@ -116,15 +116,15 @@ df['customer_value_total_ever_omnichannel'].describe().T
 
 df['order_num_omnichannel'].describe().T
 
-# Adım6: En fazla kazancı getiren ilk 10 müşteriyi sıralayınız.
+# Adım6: En fazla kazancı getiren ilk 10 müşteriyi sıralayalım.
 
 df.sort_values('customer_value_total_ever_omnichannel', ascending=False).head(10)
 
-# Adım7: En fazla siparişi veren ilk 10 müşteriyi sıralayınız.
+# Adım7: En fazla siparişi veren ilk 10 müşteriyi sıralayalım.
 
 df.sort_values('order_num_omnichannel', ascending=False).head(10)
 
-# Adım8: Veri ön hazırlık sürecini fonksiyonlaştırınız.
+# Adım8: Veri ön hazırlık sürecini fonksiyonlaştıralım.
 
 def data_prep(dataframe):
     dataframe["order_num_omnichannel"] = dataframe["order_num_total_ever_online"] + dataframe["order_num_total_ever_offline"]
@@ -145,23 +145,23 @@ def data_prep(dataframe):
 # Görev 2: RFM Metriklerinin Hesaplanması
 ###############################################################
 
-# Adım 1: Recency, Frequency ve Monetary tanımlarını yapınız.
+# Adım 1: Recency, Frequency ve Monetary tanımlarını yapalım.
 
  # Recency = analizin yapildigi tarih - ilgili musterinin son satin alma yaptigi tarih
  # Frequency = Musterinin yaptigi toplam satin alma miktari
  # Monetary = musterinin yaptigi toplam satin almalar neticesinde biraktigi toplam parasal deger
 
 
-# Adım 2: Müşteri özelinde Recency, Frequency ve Monetary metriklerini hesaplayınız.
+# Adım 2: Müşteri özelinde Recency, Frequency ve Monetary metriklerini hesaplayalım.
 # Adım 3: Hesapladığınız metrikleri rfm isimli bir değişkene atayınız.
-# Adım 4: Oluşturduğunuz metriklerin isimlerini recency, frequency ve monetary olarak değiştiriniz.
+# Adım 4: Oluşturduğunuz metriklerin isimlerini recency, frequency ve monetary olarak değiştirelim.
 df.head()
 
 df['last_order_date_offline'].max()
 df['last_order_date_online'].max()
 
 today_date = dt.datetime(2021, 6, 1)
-# Bonus Bilgi: type = dt.datetime(2021, 6, 1, format='%d/%m/%Y') Bu sekilde yaparak formati istedigimiz sekilde ayarlayabniliriz
+# Bonus Bilgi: type = dt.datetime(2021, 6, 1, format='%d/%m/%Y') Bu sekilde yaparak formati istedigimiz sekilde ayarlayabiliriz
 type(today_date)
 
 df['general_order_date'] = df[['last_order_date_offline', 'last_order_date_online']].max(axis=1)
@@ -180,8 +180,8 @@ rfm.shape
 # Görev 3: RF Skorunun Hesaplanması
 ###############################################################
 
-# Adım 1: Recency, Frequency ve Monetary metriklerini qcut yardımı ile 1-5 arasında skorlara çeviriniz.
-# Adım 2: Bu skorları recency_score, frequency_score ve monetary_score olarak kaydediniz.
+# Adım 1: Recency, Frequency ve Monetary metriklerini qcut yardımı ile 1-5 arasında skorlara çevirelim.
+# Adım 2: Bu skorları recency_score, frequency_score ve monetary_score olarak kaydedelim.
 
 rfm['recency_score'] = pd.qcut(rfm['recency'] , 5, labels= [5,4,3,2,1])
 
@@ -190,7 +190,7 @@ rfm['monetary_score'] = pd.qcut(rfm['monetary'] , 5, labels= [1,2,3,4,5])
 rfm['frequency_score'] = pd.qcut(rfm['frequency'].rank(method= 'first'), 5, labels= [1,2,3,4,5])
 
 
-# Adım 3: recency_score ve frequency_score’u tek bir değişken olarak ifade ediniz ve RF_SCORE olarak kaydediniz.
+# Adım 3: recency_score ve frequency_score’u tek bir değişken olarak ifade ediniz ve RF_SCORE olarak kaydedelim.
 
 rfm['RFM_SCORE'] = rfm['recency_score'].astype(str) \
                    + rfm['frequency_score'].astype(str)
@@ -200,7 +200,7 @@ rfm['RFM_SCORE'] = rfm['recency_score'].astype(str) \
 # Görev 4: RF Skorunun Segment Olarak Tanımlanması
 ###############################################################
 
-# Adım 1: Oluşturulan RF skorları için segment tanımlamaları yapınız.
+# Adım 1: Oluşturulan RF skorları için segment tanımlamaları yapalım.
 
 seg_map = {
     r'[1-2][1-2]': 'hibernating',
@@ -215,7 +215,7 @@ seg_map = {
     r'5[4-5]': 'champions'
 }
 
-# Adım 2: Aşağıdaki seg_map yardımı ile skorları segmentlere çeviriniz.
+# Adım 2: Aşağıdaki seg_map yardımı ile skorları segmentlere çevirelim.
 
 rfm['segment'] = rfm['RFM_SCORE'].replace(seg_map, regex = True)
 
@@ -224,16 +224,16 @@ rfm['segment'] = rfm['RFM_SCORE'].replace(seg_map, regex = True)
 # Görev 5: Aksiyon Zamanı !
 ###############################################################
 
-# Adım1: Segmentlerin recency, frequnecy ve monetary ortalamalarını inceleyiniz.
+# Adım1: Segmentlerin recency, frequnecy ve monetary ortalamalarını inceleyelim.
 
 rfm[['segment', 'recency', 'frequency' , 'monetary']].groupby('segment').agg(['mean' ,'count'])
 
-# Adım2: RFM analizi yardımıyla aşağıda verilen 2 case için ilgili profildeki müşterileri bulun ve müşteri id'lerini csv olarak kaydediniz.
+# Adım2: RFM analizi yardımıyla aşağıda verilen 2 case için ilgili profildeki müşterileri bulun ve müşteri id'lerini csv olarak kaydedelim.
 
 # a. FLO bünyesine yeni bir kadın ayakkabı markası dahil ediyor. Dahil ettiği markanın ürün fiyatları genel müşteri
 # tercihlerinin üstünde. Bu nedenle markanın tanıtımı ve ürün satışları için ilgilenecek profildeki müşterilerle özel olarak
 # iletişime geçmek isteniliyor. Sadık müşterilerinden(champions, loyal_customers) ve kadın kategorisinden alışveriş
-# yapan kişiler özel olarak iletişim kurulacak müşteriler. Bu müşterilerin id numaralarını csv dosyasına kaydediniz.
+# yapan kişiler özel olarak iletişim kurulacak müşteriler. Bu müşterilerin id numaralarını csv dosyasına kaydedelim.
 
 rfm["customer_id"] = df["master_id"]
 target_segments_customer_ids = rfm[rfm["segment"].isin(["champions", "loyal_customers"])]["customer_id"]
@@ -250,7 +250,7 @@ rfm.head()
 
 # b. Erkek ve Çocuk ürünlerinde %40'a yakın indirim planlanmaktadır. Bu indirimle ilgili kategorilerle ilgilenen geçmişte
 # iyi müşteri olan ama uzun süredir alışveriş yapmayan kaybedilmemesi gereken müşteriler, uykuda olanlar ve yeni
-# gelen müşteriler özel olarak hedef alınmak isteniyor. Uygun profildeki müşterilerin id'lerini csv dosyasına kaydediniz.
+# gelen müşteriler özel olarak hedef alınmak isteniyor. Uygun profildeki müşterilerin id'lerini csv dosyasına kaydedelim.
 
 target_segments_customer_ids = rfm[rfm["segment"].isin(["cant_loose", "hibernating", "new_customers"])]["customer_id"]
 cust_ids = df[(df["master_id"].isin(target_segments_customer_ids)) & (
