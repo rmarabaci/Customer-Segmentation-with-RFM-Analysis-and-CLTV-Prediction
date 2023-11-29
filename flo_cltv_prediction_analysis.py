@@ -25,7 +25,7 @@ from lifetimes.plotting import plot_period_transactions
 from sklearn.preprocessing import MinMaxScaler
 
 pd.set_option('display.max_columns', None)
-#pd.set_option('display.max_rows', None) '''bu islem tum satirlari da gormek istediginde yapilir.'''
+#pd.set_option('display.max_rows', None) 
 pd.set_option('display.float_format' , lambda x: '%.4f' % x)
 from lifetimes import BetaGeoFitter
 from lifetimes import GammaGammaFitter
@@ -37,7 +37,7 @@ from sklearn.preprocessing import MinMaxScaler
 # Görev 1: Veriyi Hazırlama
 # ###############################################################
 
-# Adım 1: flo_data_20K.csv verisini okuyunuz.
+# Adım 1: flo_data_20K.csv verisini okuyalım.
 
 df_ = pd.read_csv('/Users/rmarabaci/PycharmProjects/pythonProject1/data_science_bootcamp/Hafta_4_CRM_Analytics/FLO_RFM_Analizi/flo_data_20k.csv')
 
@@ -46,8 +46,8 @@ df = df_.copy()
 df.head()
 
 
-# Adım 2: Aykırı değerleri baskılamak için gerekli olan outlier_thresholds ve replace_with_thresholds fonksiyonlarını tanımlayınız.
-# Not: cltv hesaplanırken frequency değerleri integer olması gerekmektedir.Bu nedenle alt ve üst limitlerini round() ile yuvarlayınız.
+# Adım 2: Aykırı değerleri baskılamak için gerekli olan outlier_thresholds ve replace_with_thresholds fonksiyonlarını tanımlayalım.
+# Not: cltv hesaplanırken frequency değerleri integer olması gerekmektedir.Bu nedenle alt ve üst limitlerini round() ile yuvarlayalım.
 
 def outlier_thresholds(dataframe, variable):
     quartile1 = dataframe[variable].quantile(0.05)
@@ -66,7 +66,7 @@ def replace_with_thresholds(dataframe, variable):
 
 
 # Adım 3: "order_num_total_ever_online", "order_num_total_ever_offline", "customer_value_total_ever_offline",
-# "customer_value_total_ever_online" değişkenlerinin aykırı değerleri varsa baskılayanız.
+# "customer_value_total_ever_online" değişkenlerinin aykırı değerleri inceleyelim ve varsa baskılayalım.
 
 baskilama_listesi = ["order_num_total_ever_online",
           "order_num_total_ever_offline",
@@ -82,14 +82,14 @@ df.describe().T
 
 
 # Adım 4: Omnichannel müşterilerin hem online'dan hem de offline platformlardan alışveriş yaptığını ifade etmektedir. Her bir müşterinin toplam
-# alışveriş sayısı ve harcaması için yeni değişkenler oluşturunuz.
+# alışveriş sayısı ve harcaması için yeni değişkenler oluşturalım.
 
 df["order_num_total"] = df["order_num_total_ever_online"] + df["order_num_total_ever_offline"]
 df["customer_value_total"] = df["customer_value_total_ever_offline"] + df["customer_value_total_ever_online"]
 
 df.head()
 
-# Adım 5: Değişken tiplerini inceleyiniz. Tarih ifade eden değişkenlerin tipini date'e çeviriniz
+# Adım 5: Değişken tiplerini inceleyiniz. Tarih ifade eden değişkenlerin tipini date'e çevirelim.
 
 df.dtypes
 
@@ -107,7 +107,7 @@ df.dtypes
 # Görev 2: CLTV Veri Yapısının Oluşturulması
 # ###############################################################
 
-# Adım 1: Veri setindeki en son alışverişin yapıldığı tarihten 2 gün sonrasını analiz tarihi olarak alınız.
+# Adım 1: Veri setindeki en son alışverişin yapıldığı tarihten 2 gün sonrasını analiz tarihi olarak alalım.
 
 df['last_order_date'].max()
 today_date = dt.datetime(2021, 6, 1)
@@ -115,8 +115,8 @@ type(today_date)
 
 df.head()
 
-# Adım 2: customer_id, recency_cltv_weekly, T_weekly, frequency ve monetary_cltv_avg değerlerinin yer aldığı yeni bir cltv dataframe'i oluşturunuz.
-# Monetary değeri satın alma başına ortalama değer olarak, recency ve tenure değerleri ise haftalık cinsten ifade edilecek.
+# Adım 2: customer_id, recency_cltv_weekly, T_weekly, frequency ve monetary_cltv_avg değerlerinin yer aldığı yeni bir cltv dataframe'i oluşturalım.
+# Monetary değeri satın alma başına ortalama değer olarak, recency ve tenure değerleri ise haftalık cinsten ifade edilecektir.
 
 # recency: Son satın alma üzerinden geçen zaman. Haftalık. (kullanıcı özelinde)
 # T: Müşterinin yaşı. Haftalık. (analiz tarihinden ne kadar süre önce ilk satın alma yapılmış)
@@ -142,7 +142,7 @@ cltv_df["monetary_cltv_avg"] = df["customer_value_total"] / df["order_num_total"
 # Görev 3: BG/NBD, Gamma-Gamma Modellerinin Kurulması ve CLTV’nin Hesaplanması
 # ###############################################################
 
-# Adım 1: BG/NBD modelini fit ediniz.
+# Adım 1: BG/NBD modelini fit edelim.
 
 bgf = BetaGeoFitter(penalizer_coef= 0.001)
 
@@ -151,14 +151,14 @@ bgf.fit(cltv_df['frequency'],
         cltv_df["T_weekly"])
 
 # • 3 ay içerisinde müşterilerden beklenen satın almaları tahmin ediniz ve exp_sales_3_month olarak cltv
-# dataframe'ine ekleyiniz.
+# dataframe'ine ekleyelim.
 
 cltv_df["exp_sales_3_month"] = bgf.conditional_expected_number_of_purchases_up_to_time(4*3,
                                                         cltv_df["frequency"],
                                                         cltv_df["recency_cltv_weekly"],
                                                         cltv_df["T_weekly"])
 #  6 ay içerisinde müşterilerden beklenen satın almaları tahmin ediniz ve exp_sales_6_month olarak cltv
-# dataframe'ine ekleyiniz
+# dataframe'ine ekleyelim.
 
 cltv_df["exp_sales_6_month"] = bgf.conditional_expected_number_of_purchases_up_to_time(4*6,
                                                         cltv_df["frequency"],
@@ -166,8 +166,8 @@ cltv_df["exp_sales_6_month"] = bgf.conditional_expected_number_of_purchases_up_t
                                                         cltv_df["T_weekly"])
 
 
-# Adım 2: Gamma-Gamma modelini fit ediniz. Müşterilerin ortalama bırakacakları değeri tahminleyip exp_average_value olarak cltv
-# dataframe'ine ekleyiniz.
+# Adım 2: Gamma-Gamma modelini fit ekleyelim. Müşterilerin ortalama bırakacakları değeri tahminleyip exp_average_value olarak cltv
+# dataframe'ine ekleyelim.
 
 ggf = GammaGammaFitter(penalizer_coef=0.01)
 
@@ -179,8 +179,8 @@ cltv_df["exp_average_value"] = ggf.conditional_expected_average_profit(cltv_df["
 
 cltv_df.sort_values("exp_average_value", ascending=False)
 
-# Adım 3: 6 aylık CLTV hesaplayınız ve cltv ismiyle dataframe'e ekleyiniz.
-# • Cltv değeri en yüksek 20 kişiyi gözlemleyiniz
+# Adım 3: 6 aylık CLTV hesaplayınız ve cltv ismiyle dataframe'e ekleyelim.
+# • Cltv değeri en yüksek 20 kişiyi gözlemleyelim.
 
 cltv = ggf.customer_lifetime_value(bgf,
                                    cltv_df['frequency'],
@@ -200,11 +200,11 @@ cltv_df.sort_values("cltv",ascending=False)[:20]
 # Görev 4: CLTV Değerine Göre Segmentlerin Oluşturulması
 # ###############################################################
 
-# Adım 1: 6 aylık CLTV'ye göre tüm müşterilerinizi 4 gruba (segmente) ayırınız ve grup isimlerini veri setine ekleyiniz.
+# Adım 1: 6 aylık CLTV'ye göre tüm müşterilerinizi 4 gruba (segmente) ayırınız ve grup isimlerini veri setine ekleyelim.
 
 cltv_df["cltv_segment"] = pd.qcut(cltv_df["cltv"], 4, labels=["D", "C", "B", "A"])
 cltv_df.head()
 
-# Adım 2: 4 grup içerisinden seçeceğiniz 2 grup için yönetime kısa kısa 6 aylık aksiyon önerilerinde bulununuz.
+
 
 
